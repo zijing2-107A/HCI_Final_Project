@@ -21,6 +21,7 @@ import android.view.WindowManager;
 public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener {
 
     GestureDetector gestureDetector;
+    int finger_count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     //当手指在屏幕上滚动的时候触发这个方法
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        int finger_count_now = e2.getPointerCount();
+        if(finger_count_now > finger_count) finger_count = finger_count_now;
+        System.out.println("scroll count: " + finger_count_now);
         System.out.println("onScroll");
         return false;
     }
@@ -101,8 +105,13 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     //当用户的手指在触摸屏上拖过的时候触发下面的方法,velocityX代表横向上的速度,velocityY代表纵向上的速度
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        System.out.println("count: " + e2.getPointerCount());
+        System.out.println("count: " + finger_count);
         System.out.println("onFling");
+        if(finger_count != 2){
+            finger_count = 1;
+            return false;
+        }
+        finger_count = 1;
         int angle = ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
         int flag = 0;
         if (Math.abs(e1.getX() - e2.getX()) > Math.abs(e1.getY() - e2.getY())) {
