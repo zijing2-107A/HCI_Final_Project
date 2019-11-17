@@ -10,6 +10,7 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
+        Settings.System.putInt(getContentResolver(),Settings.System. ACCELEROMETER_ROTATION,0);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,18 +126,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         }
         int orientation = (flag + angle) % 4;
         System.out.println("angle: " + angle + "   flag:" + flag + "    orientation:" + orientation);
-        if (orientation == 0) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
-        else if (orientation == 1) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
-        else if (orientation == 2) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-        }
-        else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-        }
+        Settings.System.putInt(getContentResolver(),Settings.System. USER_ROTATION, orientation);
         return false;
     }
 
