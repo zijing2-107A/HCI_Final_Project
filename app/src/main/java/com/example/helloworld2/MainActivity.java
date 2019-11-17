@@ -31,12 +31,13 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-//        Settings.System.putInt(getContentResolver(),Settings.System. ACCELEROMETER_ROTATION,0);
+
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                Settings.System.putInt(getContentResolver(),Settings.System. ACCELEROMETER_ROTATION,0);
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
