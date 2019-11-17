@@ -1,6 +1,7 @@
 package com.example.helloworld2;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
@@ -44,6 +45,14 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         });
 
         gestureDetector = new GestureDetector(this, this);
+
+        startService(new Intent(getBaseContext(), MyService.class));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(getBaseContext(), MyService.class));
     }
 
     @Override
