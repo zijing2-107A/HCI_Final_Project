@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.provider.Settings;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
@@ -32,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        Settings.System.putInt(getContentResolver(),Settings.System. ACCELEROMETER_ROTATION,0);
+//        Settings.System.putInt(getContentResolver(),Settings.System. ACCELEROMETER_ROTATION,0);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     //当用户的手指在触摸屏上拖过的时候触发下面的方法,velocityX代表横向上的速度,velocityY代表纵向上的速度
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        System.out.println("count: " + finger_count);
         System.out.println("onFling");
         if(finger_count != 2){
             finger_count = 1;

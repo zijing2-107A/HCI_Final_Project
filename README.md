@@ -1,3 +1,17 @@
+## Overview
+
+This repository is the final project of Human Computer Interaction class in Tsinghua University.
+
+Group member:
+- Xinhao Zhao
+- Xiangyun Ding
+
+We implemented an Android APP for convenient and friendly screen rotation.
+
+## Usage
+
+TBD
+
 ## References
 
 - https://juejin.im/entry/58c66c9a570c35006d6bacf8
