@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     //当用户的手指在触摸屏上拖过的时候触发下面的方法,velocityX代表横向上的速度,velocityY代表纵向上的速度
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        System.out.println("count: " + e2.getPointerCount());
         System.out.println("onFling");
         int angle = ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
         int flag = 0;
