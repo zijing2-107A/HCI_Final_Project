@@ -19,8 +19,8 @@ public class MyService extends Service {
 
     // 策略：采用过去n次重力值平均值作为稳定值，随后如果重力值偏离稳定值超过k，说明需要进行操作
     final int historyNum = 10;
-    final int deltaBoundary = 5;
-    final int controlNum = 3; // 使用3次重力变化控制屏幕方向
+    final int deltaBoundary = 8;
+    final int controlNum = 2; // 使用3次重力变化控制屏幕方向
     final int millisBoundary = 500; // 两次大幅度重力变化的时间差
     List<Float> xHistoryGravity = new ArrayList<Float>();
     List<Float> xControl = new ArrayList<Float>();
@@ -75,13 +75,13 @@ public class MyService extends Service {
                         xLastTime = currTime;
 
                         float delta = X_lateral-xHistoryMean;
-                        Log.i("sensor","\n x "+delta);
+//                        Log.i("sensor","\n x "+delta);
                         xControl.add(delta);
 
                         if(xControl.size() == controlNum){
-                            if(xControl.get(0) < 0 && xControl.get(1) > 0 && xControl.get(2) < 0)
+                            if(xControl.get(0) < 0 && xControl.get(1) > 0)
                                 Settings.System.putInt(getContentResolver(),Settings.System. USER_ROTATION, 3);
-                            else if(xControl.get(0) > 0 && xControl.get(1) < 0 && xControl.get(2) > 0)
+                            else if(xControl.get(0) > 0 && xControl.get(1) < 0)
                                 Settings.System.putInt(getContentResolver(),Settings.System. USER_ROTATION, 1);
                             xControl.clear();
                         }
@@ -99,19 +99,17 @@ public class MyService extends Service {
                         yLastTime = currTime;
 
                         float delta = Y_longitudinal-yHistoryMean;
-                        Log.i("sensor","\n x "+delta);
+                        Log.i("sensor","\n y "+delta);
                         yControl.add(delta);
 
                         if(yControl.size() == controlNum){
-                            if(yControl.get(0) < 0 && yControl.get(1) > 0 && yControl.get(2) < 0)
-                                Settings.System.putInt(getContentResolver(),Settings.System. USER_ROTATION, 2);
-                            else if(yControl.get(0) > 0 && yControl.get(1) < 0 && yControl.get(2) > 0)
+                            if(yControl.get(0) > 0 && yControl.get(1) < 0)
                                 Settings.System.putInt(getContentResolver(),Settings.System. USER_ROTATION, 0);
                             yControl.clear();
                         }
                     }
                 }
-                else Log.i("sensor", "x no enough history");
+                else Log.i("sensor", "y no enough history");
             }
 
         }
