@@ -7,8 +7,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
-import android.util.TimeUtils;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -22,9 +22,12 @@ public class MyService extends Service {
     final int deltaBoundary = 5;
     final int controlNum = 3; // 使用3次重力变化控制屏幕方向
     final int millisBoundary = 500; // 两次大幅度重力变化的时间差
-    List<Float> historyGravity = new ArrayList<Float>();
-    List<Float> landscapeControl = new ArrayList<Float>();
-    long lastTime = 0; // 上次发生大幅度重力变化的时间
+    List<Float> xHistoryGravity = new ArrayList<Float>();
+    List<Float> xControl = new ArrayList<Float>();
+    List<Float> yHistoryGravity = new ArrayList<Float>();
+    List<Float> yControl = new ArrayList<Float>();
+    long xLastTime = 0; // 上次发生大幅度重力变化的时间
+    long yLastTime = 0; // 上次发生大幅度重力变化的时间
 
     public MyService() {
     }
@@ -62,27 +65,53 @@ public class MyService extends Service {
                 float Y_longitudinal = event.values[1];
                 float Z_vertical = event.values[2];
 
-                float historyMean = calculateAverage(historyGravity);
-                historyGravity.add(X_lateral);
-                if(historyGravity.size() > historyNum){
-                    historyGravity.remove(0);
-                    if(X_lateral < historyMean-deltaBoundary || X_lateral > historyMean+deltaBoundary){
+                float xHistoryMean = calculateAverage(xHistoryGravity);
+                xHistoryGravity.add(X_lateral);
+                if(xHistoryGravity.size() > historyNum){
+                    xHistoryGravity.remove(0);
+                    if(X_lateral < xHistoryMean-deltaBoundary || X_lateral > xHistoryMean+deltaBoundary){
                         long currTime = System.currentTimeMillis();
-                        if(currTime - lastTime > millisBoundary) landscapeControl.clear();
-                        lastTime = currTime;
+                        if(currTime - xLastTime > millisBoundary) xControl.clear();
+                        xLastTime = currTime;
 
-                        float delta = X_lateral-historyMean;
-                        Log.i("sensor","\n heading "+delta);
-                        landscapeControl.add(delta);
+                        float delta = X_lateral-xHistoryMean;
+                        Log.i("sensor","\n x "+delta);
+                        xControl.add(delta);
 
-                        if(landscapeControl.size() == controlNum){
-                            if(landscapeControl.get(0) < 0 && landscapeControl.get(1) > 0 && landscapeControl.get(2) < 0) ;
-                            else if(landscapeControl.get(0) > 0 && landscapeControl.get(1) < 0 && landscapeControl.get(2) > 0);
-                            landscapeControl.clear();
+                        if(xControl.size() == controlNum){
+                            if(xControl.get(0) < 0 && xControl.get(1) > 0 && xControl.get(2) < 0)
+                                Settings.System.putInt(getContentResolver(),Settings.System. USER_ROTATION, 3);
+                            else if(xControl.get(0) > 0 && xControl.get(1) < 0 && xControl.get(2) > 0)
+                                Settings.System.putInt(getContentResolver(),Settings.System. USER_ROTATION, 1);
+                            xControl.clear();
                         }
                     }
                 }
-                else Log.i("sensor", "no enough history");
+                else Log.i("sensor", "x no enough history");
+
+                float yHistoryMean = calculateAverage(yHistoryGravity);
+                yHistoryGravity.add(Y_longitudinal);
+                if(yHistoryGravity.size() > historyNum){
+                    yHistoryGravity.remove(0);
+                    if(Y_longitudinal < yHistoryMean-deltaBoundary || Y_longitudinal > yHistoryMean+deltaBoundary){
+                        long currTime = System.currentTimeMillis();
+                        if(currTime - yLastTime > millisBoundary) yControl.clear();
+                        yLastTime = currTime;
+
+                        float delta = Y_longitudinal-yHistoryMean;
+                        Log.i("sensor","\n x "+delta);
+                        yControl.add(delta);
+
+                        if(yControl.size() == controlNum){
+                            if(yControl.get(0) < 0 && yControl.get(1) > 0 && yControl.get(2) < 0)
+                                Settings.System.putInt(getContentResolver(),Settings.System. USER_ROTATION, 2);
+                            else if(yControl.get(0) > 0 && yControl.get(1) < 0 && yControl.get(2) > 0)
+                                Settings.System.putInt(getContentResolver(),Settings.System. USER_ROTATION, 0);
+                            yControl.clear();
+                        }
+                    }
+                }
+                else Log.i("sensor", "x no enough history");
             }
 
         }
