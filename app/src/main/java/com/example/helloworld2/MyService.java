@@ -60,7 +60,6 @@ public class MyService extends Service {
 
             if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
 //                Log.i("sensor","onSensorChanged");
-                //图解中已经解释三个值的含义
                 float X_lateral = event.values[0];
                 float Y_longitudinal = event.values[1];
                 float Z_vertical = event.values[2];
