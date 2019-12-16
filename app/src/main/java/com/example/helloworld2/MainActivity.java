@@ -1,9 +1,10 @@
 package com.example.helloworld2;
 
 import android.app.Activity;
-import android.graphics.Rect;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -14,6 +15,8 @@ public class MainActivity extends Activity {
 
     private final String TAG = MainActivity.class.getSimpleName();
 
+    private long last_check_time;
+
     /**
      * 操作的是SurfaceHolder，所以定义全局变量
      */
@@ -22,6 +25,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        last_check_time = 0;
 
         setContentView(R.layout.content_main);
 
@@ -141,12 +146,27 @@ public class MainActivity extends Activity {
         @Override
         public void onFaceDetection(Camera.Face[] faces, Camera camera) {
             if (faces.length > 0) {
-                Camera.Face face = faces[0];
-                Rect rect = face.rect;
-                Log.e("tag", "【FaceDetectorListener】类的方法：【onFaceDetection】: 检测到人脸");
-                Log.d("tag", "Left eye: (" + face.leftEye.x + ", " + face.leftEye.y + ")");
-                Log.d("tag", "Right eye: (" + face.rightEye.x + ", " + face.rightEye.y + ")");
-                Log.d("tag", "Mouth: (" + face.mouth.x + ", " + face.mouth.y + ")");
+                long current_time = System.currentTimeMillis();
+                if (current_time - last_check_time > 5000) {
+                    Camera.Face face = faces[0];
+                    Log.e("tag", "【FaceDetectorListener】类的方法：【onFaceDetection】: 检测到人脸");
+                    Log.d("tag", "Left eye: (" + face.leftEye.x + ", " + face.leftEye.y + ")");
+                    Log.d("tag", "Right eye: (" + face.rightEye.x + ", " + face.rightEye.y + ")");
+                    Log.d("tag", "Mouth: (" + face.mouth.x + ", " + face.mouth.y + ")");
+                    Point mid = new Point((face.leftEye.x + face.rightEye.x) / 2, (face.leftEye.y + face.rightEye.y) / 2);
+                    Point v = new Point(face.mouth.x - mid.x, face.mouth.y - mid.y);
+                    int angle;
+                    if (Math.abs(v.x) > Math.abs(v.y)) {
+                        if (v.x > 0) angle = 2;
+                        else angle = 0;
+                    }
+                    else {
+                        if (v.y > 0) angle = 1;
+                        else angle = 3;
+                    }
+                    Settings.System.putInt(getContentResolver(),Settings.System.USER_ROTATION, angle);
+                    last_check_time = current_time;
+                }
             } else {
                 // 只会执行一次
                 Log.e("tag", "【FaceDetectorListener】类的方法：【onFaceDetection】: 没有人脸");
