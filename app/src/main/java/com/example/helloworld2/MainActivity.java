@@ -1,5 +1,6 @@
 package com.example.helloworld2;
 
+import android.Manifest;
 import android.app.Activity;
 import android.graphics.Point;
 import android.hardware.Camera;
@@ -8,6 +9,8 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import androidx.core.app.ActivityCompat;
 
 import java.io.IOException;
 
@@ -25,6 +28,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.CAMERA},1);
 
         last_check_time = 0;
 
