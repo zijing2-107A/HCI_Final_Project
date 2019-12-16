@@ -2,13 +2,16 @@ package com.example.helloworld2;
 
 import android.Manifest;
 import android.app.Activity;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 
 import androidx.core.app.ActivityCompat;
 
@@ -20,9 +23,9 @@ public class MainActivity extends Activity {
 
     private long last_check_time;
 
-    /**
-     * 操作的是SurfaceHolder，所以定义全局变量
-     */
+    private WindowManager windowManager;
+    private WindowManager.LayoutParams layoutParams;
+    private SurfaceView myview;
     private SurfaceHolder surfaceHolder;
 
     @Override
@@ -33,28 +36,27 @@ public class MainActivity extends Activity {
 
         last_check_time = 0;
 
-        setContentView(R.layout.content_main);
+        setContentView(R.layout.activity_main);
 
-        // 获取在布局文件中定义的SurfaceView
-        SurfaceView surfaceView = findViewById(R.id.surface_view);
-
-        // 不能直接操作SurfaceView，需要通过SurfaceView拿到SurfaceHolder
-        surfaceHolder = surfaceView.getHolder();
-
-        // 使用SurfaceHolder设置屏幕高亮，注意：所有的View都可以设置 设置屏幕高亮
+        SurfaceView myview = new SurfaceView(this);
+        surfaceHolder = myview.getHolder();
         surfaceHolder.setKeepScreenOn(true);
-//
-//        // 使用SurfaceHolder设置把画面或缓存 直接显示出来
-//        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
         surfaceHolder.addCallback(callback);
+
+        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+
+        layoutParams = new WindowManager.LayoutParams();
+        layoutParams.width = layoutParams.height = 1;
+        layoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        layoutParams.gravity = Gravity.RIGHT | Gravity.TOP ;
+        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+        layoutParams.format = PixelFormat.TRANSLUCENT;
+
+        windowManager.addView(myview, layoutParams);
     }
 
     private Camera camera;
 
-    /**
-     * 定义SurfaceView监听回调
-     */
     private SurfaceHolder.Callback callback = new SurfaceHolder.Callback() {
 
         @Override
@@ -63,9 +65,6 @@ public class MainActivity extends Activity {
             // Camera.open(1); // 这了传入的值，可以指定为：前置摄像头/后置摄像头
             camera = Camera.open(1);
 
-            /**
-             * 设置Camera与SurfaceHolder关联，Camera的数据让SurfaceView显示
-             */
             try {
                 camera.setPreviewDisplay(holder);
             } catch (IOException e) {
@@ -90,7 +89,6 @@ public class MainActivity extends Activity {
 
             try {
                 camera.stopPreview();
-
             } catch (Exception e) {
                 // ignore: tried to stop a non-existent preview
                 Log.e(TAG, "Error stopping camera preview: " + e.getMessage());
@@ -99,9 +97,7 @@ public class MainActivity extends Activity {
             try {
                 camera.setPreviewDisplay(surfaceHolder);
                 camera.startPreview();
-
                 startFaceDetection(); // re-start face detection feature
-
             } catch (Exception e) {
                 // ignore: tried to stop a non-existent preview
                 Log.d(TAG, "Error starting camera preview: " + e.getMessage());
@@ -118,9 +114,6 @@ public class MainActivity extends Activity {
     };
 
 
-    /**
-     * 当Activity被销毁的时候，一定要移除监听
-     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -129,9 +122,6 @@ public class MainActivity extends Activity {
     }
 
 
-    /**
-     * 启动脸部检测，如果getMaxNumDetectedFaces()!=0说明不支持脸部检测
-     */
     public void startFaceDetection() {
         // Try starting Face Detection
         Camera.Parameters params = camera.getParameters();
@@ -144,15 +134,13 @@ public class MainActivity extends Activity {
         }
     }
 
-    /**
-     * 脸部检测接口
-     */
+
     private class FaceDetectorListener implements Camera.FaceDetectionListener {
         @Override
         public void onFaceDetection(Camera.Face[] faces, Camera camera) {
             if (faces.length > 0) {
                 long current_time = System.currentTimeMillis();
-                if (current_time - last_check_time > 5000) {
+                if (current_time - last_check_time > 2000) {
                     Camera.Face face = faces[0];
                     Log.e("tag", "【FaceDetectorListener】类的方法：【onFaceDetection】: 检测到人脸");
                     Log.d("tag", "Left eye: (" + face.leftEye.x + ", " + face.leftEye.y + ")");
@@ -173,7 +161,6 @@ public class MainActivity extends Activity {
                     last_check_time = current_time;
                 }
             } else {
-                // 只会执行一次
                 Log.e("tag", "【FaceDetectorListener】类的方法：【onFaceDetection】: 没有人脸");
             }
         }
