@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
 
 import androidx.core.app.ActivityCompat;
@@ -22,6 +23,7 @@ public class MainActivity extends Activity {
     private final String TAG = MainActivity.class.getSimpleName();
 
     private long last_check_time;
+    private long fuck_time = 2000;
 
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
@@ -140,7 +142,7 @@ public class MainActivity extends Activity {
         public void onFaceDetection(Camera.Face[] faces, Camera camera) {
             if (faces.length > 0) {
                 long current_time = System.currentTimeMillis();
-                if (current_time - last_check_time > 2000) {
+                if (current_time - last_check_time > fuck_time) {
                     Camera.Face face = faces[0];
                     Log.e("tag", "【FaceDetectorListener】类的方法：【onFaceDetection】: 检测到人脸");
                     Log.d("tag", "Left eye: (" + face.leftEye.x + ", " + face.leftEye.y + ")");
@@ -164,5 +166,20 @@ public class MainActivity extends Activity {
                 Log.e("tag", "【FaceDetectorListener】类的方法：【onFaceDetection】: 没有人脸");
             }
         }
+    }
+
+    public void Fuck500(View view) {
+        fuck_time = 500;
+        Log.d(TAG, "Fuck500");
+    }
+
+    public void Fuck1000(View view) {
+        fuck_time = 1000;
+        Log.d(TAG, "Fuck1000");
+    }
+
+    public void Fuck2000(View view) {
+        fuck_time = 2000;
+        Log.d(TAG, "Fuck2000");
     }
 }
