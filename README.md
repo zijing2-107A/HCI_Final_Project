@@ -1,3 +1,9 @@
+## Overview
+
+- master分支：手势
+- gravity分支：摇一摇
+- try_camera分支：人脸检测
+
 ## References
 
 - https://juejin.im/entry/58c66c9a570c35006d6bacf8
